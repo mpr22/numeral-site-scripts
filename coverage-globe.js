@@ -556,9 +556,9 @@
     let introRise = 0, introScale = 1; // driven by the intro animation, 0 / 1 at rest
     const zoomUi = document.createElement('div');
     zoomUi.className = 'ncg-zoom';
-    zoomUi.innerHTML = '<button type="button" aria-label="Zoom in">+</button><button type="button" aria-label="Zoom out">\u2212</button>';
+    zoomUi.innerHTML = '<button type="button" aria-label="Zoom out">\u2212</button><button type="button" aria-label="Zoom in">+</button>';
     container.appendChild(zoomUi);
-    const [zoomInBtn, zoomOutBtn] = zoomUi.querySelectorAll('button');
+    const [zoomOutBtn, zoomInBtn] = zoomUi.querySelectorAll('button');
     const setZoom = z => {
       zoomTarget = THREE.MathUtils.clamp(z, CONFIG.minZoom, CONFIG.maxZoom);
       zoomInBtn.disabled = zoomTarget >= CONFIG.maxZoom - 1e-3;
