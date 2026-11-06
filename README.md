@@ -14,7 +14,7 @@ Both load Three.js and the world-atlas map data from jsDelivr on their own. Noth
 Add one tag to the page's footer custom code. Always pin an exact release tag, never a branch:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/<org>/numeral-site-scripts@v1.0.0/coverage-globe.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/mpr22/numeral-site-scripts@v1.0.0/coverage-globe.min.js" defer></script>
 ```
 
 jsDelivr minifies the file when you request `.min.js`, so the repo only holds readable source.
