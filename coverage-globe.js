@@ -69,7 +69,7 @@
     .ncg-root canvas.ncg-dust { position: absolute; inset: 0; pointer-events: none; cursor: default; }
     .ncg-root canvas.is-over-country { cursor: pointer; }
     .ncg-root canvas:active { cursor: grabbing; }
-    .ncg-zoom { position: absolute; right: 1rem; top: 1rem; display: flex; flex-direction: column; gap: 0.375rem; z-index: 4; }
+    .ncg-zoom { position: absolute; left: 1rem; top: 1rem; display: flex; flex-direction: column; gap: 0.375rem; z-index: 4; }
     .ncg-zoom button {
       width: 2.25rem; height: 2.25rem; display: grid; place-items: center; padding: 0;
       background: #fff; color: #475569; border: 1px solid #e2e8f0; border-radius: 0.5rem;
@@ -580,14 +580,14 @@
       setZoom(zoomTarget * Math.exp(-e.deltaY * step));
     }, { passive: false });
 
-    // Zoom buttons stack under the page's legend in the top-right corner, right-aligned with it
+    // Zoom buttons mirror the page's legend: top-left, same inset from the left as the legend has from the right
     const legend = wrapper && wrapper.querySelector('.coverage-map-legend');
     function placeZoomUi() {
       if (!legend) return;
       const cr = container.getBoundingClientRect(), lr = legend.getBoundingClientRect();
       if (!lr.width) return;
-      zoomUi.style.top = `${lr.bottom - cr.top + 8}px`;
-      zoomUi.style.right = `${cr.right - lr.right}px`;
+      zoomUi.style.top = `${lr.top - cr.top}px`;
+      zoomUi.style.left = `${cr.right - lr.right}px`;
     }
     setZoom(CONFIG.zoom);
 
