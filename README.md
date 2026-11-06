@@ -1,46 +1,54 @@
 # numeral-site-scripts
 
-Standalone scripts for the Numeral Webflow site, served from jsDelivr.
+Scripts that run on the Numeral Webflow site (numeral.com). Webflow loads them from jsDelivr, so this repo is the only copy of the code.
 
-| File | Used on | What it does |
+| File | Webflow page | What it does |
 |---|---|---|
-| `coverage-globe.js` | `/coverage` | 3D coverage map. Colours each country from the VAT CMS table rows on the page and replaces the old flat SVG map. |
-| `connection-globe.js` | `/get-started-alt` | Wireframe globe with pulsing country-to-country arcs and currency pills. |
+| `coverage-globe.js` | Coverage | 3D coverage map. Colours each country from the VAT CMS table rows on the page. |
+| `coverage-table.js` | Coverage | Status icons and the All / Live / Coming Soon filter on the VAT table. |
+| `get-started-globe.js` | Get Started Alt | Wireframe globe with pulsing country-to-country arcs and currency pills. |
 
-Both load Three.js and the world-atlas map data from jsDelivr on their own. Nothing else needs to be on the page.
+The globes load Three.js and the world-atlas map from jsDelivr on their own. Nothing else needs to be on the page.
 
-## Using a script in Webflow
+The Luma → Webflow events sync is separate, in the private `numeral-webflow` repo.
 
-Add one tag to the page's footer custom code. Always pin an exact release tag, never a branch:
+## How Webflow loads them
+
+Each page's custom code has one tag per script, pinned to a release tag:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/mpr22/numeral-site-scripts@v1.0.0/coverage-globe.min.js" defer></script>
+<!-- Coverage → Page settings → Before </body> -->
+<script src="https://cdn.jsdelivr.net/gh/mpr22/numeral-site-scripts@v1.1.0/coverage-table.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/mpr22/numeral-site-scripts@v1.1.0/coverage-globe.min.js" defer></script>
 ```
 
-jsDelivr minifies the file when you request `.min.js`, so the repo only holds readable source.
+Get Started Alt has an HTML embed in the right-hand panel. It holds the mount `<div data-gs-alt="globe-mount" …>`, with the framing attributes, followed by a script tag for `get-started-globe.min.js`.
+
+jsDelivr minifies a file when you ask for `.min.js`, so the repo only holds readable source.
 
 ## Releasing a change
 
 1. Edit the file and commit.
-2. Tag a new version: `git tag v1.0.1 && git push --tags`.
-3. In Webflow, bump the version in the script URL, then publish.
+2. Tag a new version: `git tag v1.1.1 && git push origin main --tags`.
+3. In Webflow, change the version in the script URL, then publish.
 
-The live site only changes when the Webflow URL changes. Re-pushing a tag won't reach visitors: jsDelivr caches tagged files permanently.
+The live site only changes when the Webflow URL changes. Never move an existing tag: jsDelivr caches tagged files permanently.
 
 ## coverage-globe.js
 
-Mounts into `[data-coverage-globe]`, or into the page's `.coverage-map_svg-holder` if there's no mount element. It fills the nearest positioned ancestor.
+Mounts into `[data-coverage-globe]`. If the page has none, it mounts into `.coverage-map_svg-holder`. It fills the nearest positioned ancestor.
 
-**Data:** reads `.coverage-table_row[data-status]` and `.coverage-table_row-country-name` from the page. Statuses are `Live`, `Coming soon` and `Waiting`. If a CMS name doesn't match the world-atlas name, add it to `ALIASES` in the script.
+**Data:** reads `.coverage-table_row[data-status]` and `.coverage-table_row-country-name`. The statuses are `Live`, `Coming soon` and `Waiting`. If a CMS name doesn't match the world-atlas name, add it to `ALIASES`.
 
 **Behaviour:**
-- Starts loading only when the map is within about 600px of the viewport.
-- The first time the map is on screen, it plays an intro that rises and spins in, then settles.
-- Slow spin and drag to rotate to either pole. Zoom with the +/− buttons (top left, mirroring the page legend) or a trackpad pinch. The mouse wheel also zooms, but only after someone has clicked the globe, and only until the cursor leaves it.
-- Hovering a country lightens it. Clicking a country fills the page's `.coverage-map_tooltip`. Clicking the label or anywhere off the globe closes it.
-- Faint drifting dust in the panel behind the globe.
+- It loads nothing until the map is within about 600px of the viewport.
+- It plays a rise-and-spin intro the first time it's on screen.
+- It spins slowly. Dragging rotates it to either pole.
+- Zoom with the +/− buttons, top left (mirroring the legend), or a trackpad pinch. The mouse wheel zooms only after someone clicks the globe, until the cursor leaves it.
+- Hovering a country lightens it. Clicking one fills the page's `.coverage-map_tooltip`. Clicking the label, or anywhere off the globe, closes it.
+- Faint dust drifts behind the globe.
 
-**Optional data attributes** on the mount element:
+**Optional data attributes:**
 
 | Attribute | Default | Meaning |
 |---|---|---|
@@ -55,12 +63,19 @@ Mounts into `[data-coverage-globe]`, or into the page's `.coverage-map_svg-holde
 
 Colours, dust and intro timing are in `DEFAULTS` at the top of the file.
 
-## connection-globe.js
+## coverage-table.js
 
-Mounts into `[data-numeral-globe]` or `[data-gs-alt="globe-mount"]` and fills the nearest positioned ancestor.
+Does three things:
+- swaps in the status icons
+- runs the filter dropdown
+- closes the dropdown when someone clicks outside it
+
+## get-started-globe.js
+
+Mounts into `[data-numeral-globe]` or `[data-gs-alt="globe-mount"]`, and fills the nearest positioned ancestor.
 
 **Optional data attributes:**
-- `data-labels="usa,uk,jpn"`, or `"none"` for no labels
+- `data-labels="usa,uk,jpn"`, or `"none"`
 - `data-globe-x`, `data-globe-y`, `data-globe-radius`
 - `data-ocean-opacity`, `data-rim-color`
 - `data-pill-size` (px)
