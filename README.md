@@ -36,7 +36,7 @@ Mounts into `[data-coverage-globe]`, or into the page's `.coverage-map_svg-holde
 **Behaviour:**
 - Starts loading only when the map is within about 600px of the viewport.
 - The first time the map is on screen, it plays an intro that rises and spins in, then settles.
-- Slow spin and drag to rotate to either pole. Zoom with the +/− buttons (top left, mirroring the page legend) or a trackpad pinch. The mouse wheel also zooms, but only after someone has clicked the globe, and only until the cursor leaves it.
+- Slow spin and drag to rotate to either pole. Zoom with the +/− buttons (top right, under the page legend) or a trackpad pinch. The mouse wheel also zooms, but only after someone has clicked the globe, and only until the cursor leaves it.
 - Hovering a country lightens it. Clicking a country fills the page's `.coverage-map_tooltip`. Clicking the label or anywhere off the globe closes it.
 - Faint drifting dust in the panel behind the globe.
 
