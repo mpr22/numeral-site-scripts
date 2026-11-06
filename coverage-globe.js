@@ -74,6 +74,7 @@
       width: 2.25rem; height: 2.25rem; display: grid; place-items: center; padding: 0;
       background: #fff; color: #475569; border: 1px solid #e2e8f0; border-radius: 0.5rem;
       font: 400 1.125rem/1 system-ui, sans-serif; cursor: pointer; transition: background 0.15s, color 0.15s;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1); /* same as the page legend */
     }
     .ncg-zoom button:hover { background: #f8fafc; color: #1e293b; }
     .ncg-zoom button:disabled { opacity: 0.4; cursor: default; }`;
