@@ -69,7 +69,7 @@
     .ncg-root canvas.ncg-dust { position: absolute; inset: 0; pointer-events: none; cursor: default; }
     .ncg-root canvas.is-over-country { cursor: pointer; }
     .ncg-root canvas:active { cursor: grabbing; }
-    .ncg-zoom { position: absolute; right: 1rem; bottom: 1rem; display: flex; flex-direction: column; gap: 0.375rem; z-index: 4; }
+    .ncg-zoom { position: absolute; right: 1rem; bottom: 1rem; display: flex; gap: 0.375rem; z-index: 4; }
     .ncg-zoom button {
       width: 2.25rem; height: 2.25rem; display: grid; place-items: center; padding: 0;
       background: #fff; color: #475569; border: 1px solid #e2e8f0; border-radius: 0.5rem;
@@ -566,12 +566,31 @@
     };
     zoomInBtn.addEventListener('click', () => setZoom(zoomTarget * 1.3));
     zoomOutBtn.addEventListener('click', () => setZoom(zoomTarget / 1.3));
-    // trackpad pinch arrives as ctrl+wheel; a plain wheel still scrolls the page
+    // Wheel zoom. Trackpad pinch (ctrl+wheel) always zooms; a plain wheel only zooms once someone has
+    // clicked or dragged the globe, and goes back to scrolling the page as soon as the cursor leaves it,
+    // so people scrolling past are never trapped.
+    let wheelActive = false;
+    canvas.addEventListener('pointerdown', () => { wheelActive = true; });
+    canvas.addEventListener('pointerleave', () => { wheelActive = false; });
     canvas.addEventListener('wheel', e => {
-      if (!e.ctrlKey) return;
+      if (!e.ctrlKey && !wheelActive) return;
       e.preventDefault();
-      setZoom(zoomTarget * Math.exp(-e.deltaY * 0.01));
+      const step = e.ctrlKey ? 0.01 : 0.0015; // pinch deltas are small, mouse-wheel deltas are large
+      setZoom(zoomTarget * Math.exp(-e.deltaY * step));
     }, { passive: false });
+
+    // Zoom buttons sit just under the page's legend, right-aligned with it
+    const legend = wrapper && wrapper.querySelector('.coverage-map-legend');
+    function placeZoomUi() {
+      if (!legend) return;
+      const cr = container.getBoundingClientRect(), lr = legend.getBoundingClientRect();
+      if (!lr.width) return;
+      Object.assign(zoomUi.style, {
+        top: `${lr.bottom - cr.top + 8}px`,
+        right: `${cr.right - lr.right}px`,
+        bottom: 'auto',
+      });
+    }
     setZoom(CONFIG.zoom);
 
     function layout() {
@@ -598,8 +617,11 @@
       camera.updateProjectionMatrix();
       layout();
       placeTooltip();
+      placeZoomUi();
     }
-    new ResizeObserver(resize).observe(container);
+    const ro = new ResizeObserver(resize);
+    ro.observe(container);
+    if (legend) ro.observe(legend); // e.g. the legend's web font loading late
     resize();
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
